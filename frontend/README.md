@@ -1,262 +1,59 @@
-# 🧠 Job Executive AI-Powered Job Portal (Full Stack)
+# Job Executive - Frontend
 
-Backend service for the **Job Executive** platform — a job portal connecting job seekers and employers, with an admin panel for system management.The project includes **AI-powered resume enhancement**, secure authentication, role-based access control, and a scalable backend designed for cloud hosting.
+The React and TypeScript client for Job Executive, a job portal for job seekers, employers, and administrators. The frontend is built with Vite and Tailwind CSS and communicates with the Express API over HTTP.
 
----
+![Job Executive application preview](photo-collage.png.png)
 
-## 🚀 [Live Features](https://job-executive-frontend.vercel.app/)
+## Features
 
-![ Job Executive AI-Powered Job Portal](photo-collage.png.png)
-### 👤 Multi-Role System
-- **Job Seeker**
-  - Profile creation and editing
-  - Add skills, expected salary, and resume link
-  - Apply for jobs
-  - View application statuses
-  - AI-powered resume booster
-- **Employer**
-  - Create and manage job postings
-  - View applicants for each job
-  - Shortlist, hire, or reject candidates
-- **Admin**
-  - Manage users and jobs
-  - Delete users or job listings
-  - Update user roles
+- Public job, company, and blog pages
+- Job seeker profile, job applications, and application tracking
+- Employer job management and applicant review
+- Administrator views for managing users and jobs
+- Gemini-powered resume enhancement through the backend API
+- JWT attachment and 401 handling through a shared Axios instance
 
----
+## Requirements
 
-### 🤖 AI Integration (Google Gemini API)
-- **Resume Booster**
-  - Enhances resume text using Gemini AI
-  - Improves clarity, grammar, and professional tone
-- Designed for future AI extensions such as:
-  - Job description optimization
-  - Smart job recommendations
+- Node.js 18 or newer
+- The backend API running locally or deployed
 
----
+## Run locally
 
-### 📄 Resume Handling
-- Resume shared as **Google Drive URL**
-- No file storage required
-- Hosting-friendly and scalable
-- Users control access permissions
+From the repository root:
 
----
-
-### 🔐 Authentication & Security
-- JWT-based authentication
-- Role-based authorization
-- Password hashing using bcrypt
-- Protected routes for each role
-
----
-
-## 🛠️ Tech Stack
-
-### [Backend](https://github.com/saboo-vivek/Job-Executive-Backend)
-- Node.js
-- Express.js
-- MongoDB Atlas
-- Mongoose ODM
-- JWT Authentication
-- Google Gemini API
-- Swagger UI
-- bcrypt, dotenv, cors, morgan
-
-### Frontend
-- React
-- TypeScript
-- Tailwind CSS
-- Axios
-
----
-
-## ⚙️ Setup Instructions
-
-### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/saboo-vivek/job-executive.git
-cd backend
-```
-
-### 2️⃣ Install Dependencies
-```bash
+```powershell
+cd frontend
 npm install
 ```
 
-### 3️⃣ Create Environment File
-In the `backend` folder, create a `.env` file (see example below 👇).
-
-### 4️⃣ Run MongoDB
-If local:
-```bash
-mongodb
-```
-Or connect to **MongoDB Atlas** using your connection string.
-
-### 5️⃣ Start the Server
-```bash
-npm start
-```
-
-
-
-## 📘 Example `.env` File
+By default, Vite uses `http://localhost:4000/api` for API calls during development. To use a different backend, create `frontend/.env.local`:
 
 ```env
-PORT=4000
-MONGO_URI=mongodb://localhost:27017/job_executive
-JWT_SECRET=supersecretjwtkey
-NODE_ENV=development
+VITE_API_URL=http://localhost:4000/api
 ```
 
----
+Then start the development server:
 
-## 📍 API Endpoints Overview
-
-### 🧑‍💼 Auth Routes (`/auth`)
-| Method | Endpoint | Description |
-|--------|-----------|-------------|
-| `POST` | `/auth/register` | Register new user (Seeker / Employer / Admin) |
-| `POST` | `/auth/login` | Login and receive JWT token |
-| `GET` | `/auth/me` | Get the currently logged-in user profile |
-
----
-
-### 💼 Job Routes (`/job`)
-| Method | Endpoint | Description |
-|--------|-----------|-------------|
-| `GET` | `/job` | Get all available jobs |
-| `POST` | `/job` | Post a new job *(Employer only)* |
-| `GET` | `/job/my/jobs` | Get all jobs posted by the logged-in employer |
-| `DELETE` | `/job/:id` | Delete a job *(Employer or Admin)* |
-
----
-
-### 📄 Application Routes (`/applications`)
-| Method | Endpoint | Description |
-|--------|-----------|-------------|
-| `POST` | `/applications/:jobId/apply` | Apply to a job *(Seeker only)* |
-| `GET` | `/applications/me` | Get all applications of the logged-in seeker |
-| `GET` | `/applications/:jobId/applications` | View applicants for a specific job *(Employer only)* |
-| `PUT` | `/applications/status/:applicationId` | Update application status *(Employer only)* |
-
----
-
-### 🛠️ Admin Routes (`/admin`)
-| Method | Endpoint | Description |
-|--------|-----------|-------------|
-| `GET` | `/admin/users` | Get all users *(Admin only)* |
-| `GET` | `/admin/jobs` | Get all jobs *(Admin only)* |
-| `DELETE` | `/admin/users/:id` | Delete a user *(Admin only)* |
-| `DELETE` | `/admin/jobs/:id` | Delete a job *(Admin only)* |
-| `PUT` | `/admin/users/:id/role` | Update a user’s role *(Admin only)* |
-
----
-
-## 🧩 Database Schema Overview
-
-### 🧍‍♂️ User Model
-```js
-{
-  _id: ObjectId,
-  name: String,
-  email: String,
-  password: String,
-  role: { type: String, enum: ["SEEKER", "EMPLOYER", "ADMIN"] },
-  photoUrl: String,
-  company: String,       // for employers
-  resumeUrl: String,     // for seekers
-  appliedJobs: [ObjectId], // references Job IDs
-  createdAt: Date,
-  updatedAt: Date
-}
+```powershell
+npm run dev
 ```
 
----
+Vite serves the frontend at `http://localhost:3000`.
 
-### 💼 Job Model
-```js
-{
-  _id: ObjectId,
-  title: String,
-  description: String,
-  employerId: { type: ObjectId, ref: "User" },
-  location: String,
-  locationType: String, // e.g. Remote, On-site
-  salaryMin: Number,
-  salaryMax: Number,
-  experienceLevel: String,
-  applicants: [ObjectId],   // seeker IDs
-  shortlisted: [ObjectId],  // seeker IDs
-  rejected: [ObjectId],     // seeker IDs
-  createdAt: Date,
-  updatedAt: Date
-}
+## Build
+
+```powershell
+npm run build
+npm run preview
 ```
 
----
+The production files are written to `dist/`. The project currently defines `dev`, `build`, and `preview` scripts; it does not define a frontend test or lint script.
 
-### 📝 Application Model
-```js
-{
-  _id: ObjectId,
-  jobId: { type: ObjectId, ref: "Job" },
-  seekerId: { type: ObjectId, ref: "User" },
-  status: {
-    type: String,
-    enum: ["APPLIED", "SHORTLISTED", "HIRED", "REJECTED"],
-    default: "APPLIED"
-  },
-  createdAt: Date,
-  updatedAt: Date
-}
-```
+## API configuration and secrets
 
----
+When the frontend and backend are deployed on different domains, set `VITE_API_URL` to the backend API origin, ending in `/api`. This variable is included in the browser build, so it must not contain secrets.
 
-## 🔒 Authentication
+Keep `GEMINI_API_KEY`, `JWT_SECRET`, and `MONGO_URI` on the backend only. **Do not set `GEMINI_API_KEY` in the frontend environment.** The current `vite.config.ts` maps Gemini environment values into client-side defines; remove those mappings before supplying any Gemini key to avoid exposing it in the built JavaScript.
 
-All protected routes require a JWT token.
-
-**Example header:**
-```
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR...
-```
-
----
-
-## 🧪 Example Testing Flow (via Swagger or Postman)
-
-1. **Register Users:**
-   - One **Seeker**, one **Employer**, one **Admin**.
-2. **Login:**
-   - Obtain JWT tokens for each.
-3. **Employer:**
-   - Post a job.
-4. **Seeker:**
-   - Apply for the job.
-5. **Employer:**
-   - View applicants and change status (e.g., Shortlisted).
-6. **Admin:**
-   - View all users/jobs and remove fake accounts.
-
----
-
-
-
-## 🧭 Future Enhancements
-- Email notifications on status updates  
-- Resume uploads   
-- Pagination and filters for job search  
-- Admin analytics dashboard  
-
----
-
-## 🧑‍💻 Author
-**Vivek Sahu**  
-
----
-
-## 🏁 License
-This project is licensed under the **MIT License**.
+See the [backend README](../backend/README.md) for API setup and deployment.

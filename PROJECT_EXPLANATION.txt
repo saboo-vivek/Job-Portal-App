@@ -1,0 +1,72 @@
+JOB EXECUTIVE - INTERVIEW PROJECT WALKTHROUGH
+Suggested speaking time: about 6-8 minutes
+
+Use this as a speaking guide, not a script to memorize word for word. Adjust the examples to match what you personally implemented.
+
+1. INTRODUCTION AND PROBLEM
+
+"My project is Job Executive, a full-stack job portal that brings job seekers and employers together. I wanted to build more than a page that lists vacancies: the platform supports the main hiring workflow, from discovering a job through reviewing and updating an application.
+
+"It has three user roles: job seeker, employer, and administrator. Each role has different responsibilities and access. Public visitors can browse jobs, companies, and community posts, while signed-in users get features based on their role."
+
+2. MAIN USER FLOWS
+
+"A job seeker can register, create a profile, add skills and a resume link, search and filter job listings, apply to a job, and view the status of their applications. An employer can create and manage job listings, see applicants for their own jobs, and update application statuses such as applied, shortlisted, hired, or rejected. An administrator can manage users and job listings.
+
+"There are also company and blog features, including company reviews and blog interactions. The resume booster accepts text and uses Gemini to return a professionally rewritten summary."
+
+3. TECHNICAL ARCHITECTURE
+
+"The frontend is built with React and TypeScript using Vite. It contains the public pages, role-specific dashboards, and reusable UI components. API calls are organized in a service layer and use Axios. The Axios instance adds the user's JWT to requests and handles unauthorized responses.
+
+"The backend is a Node.js and Express REST API. It separates routes, controllers, models, middleware, and utilities. Routes define the endpoints, controllers implement the business logic, Mongoose models describe the MongoDB data, and middleware handles authentication, role checks, rate limits, and other shared behavior.
+
+"The frontend and backend are separate applications, even though they can live in one Git repository. The frontend calls the backend over HTTP. The API base URL can be configured for local development and deployment."
+
+4. DATA MODEL AND APPLICATION LIFECYCLE
+
+"MongoDB stores users, jobs, applications, and blog data. Users have a role and role-specific profile information. Jobs refer to the employer who posted them. Applications are a separate collection that references both the job and the seeker and stores the application status and timestamps.
+
+"When a seeker applies, the API verifies that the job exists and that the seeker is not applying to their own job. It checks for an existing application, creates the application, and updates related job and user references. A unique database index on job and seeker provides a final safeguard against duplicate applications. Employers can only view applicants for their own jobs and can update an application's status.
+
+"Job search supports filters such as keyword, location, job type, work location type, experience level, and salary range. Search input is escaped before it is used in a regular expression."
+
+5. AUTHENTICATION AND ACCESS CONTROL
+
+"Passwords are hashed with bcrypt rather than stored as plain text. After a successful login, the backend issues a signed JWT. For protected requests, authentication middleware verifies the token and loads the user's record. Role middleware then restricts actions to the appropriate role. For ownership-sensitive actions, such as viewing applicants or editing a job, the backend also checks that the signed-in employer owns that job.
+
+"The API also rate-limits authentication and AI requests. Public demo accounts have safeguards to prevent visitors from changing shared credentials or removing protected demo data."
+
+6. AI FEATURE
+
+"The AI resume booster is an API integration rather than a direct browser-to-Gemini call. The frontend sends resume text to the backend, and the backend calls Gemini and returns the generated summary. The prompt asks for a concise, professional, ATS-friendly paragraph. The request is rate-limited, and the API key should be kept only in the backend's environment variables."
+
+7. ENGINEERING DECISIONS AND TRADE-OFFS
+
+"One important data decision was storing applications as their own records instead of treating an applicant list as the only source of truth. This lets the application have its own status and timestamps and makes it easier to query applications for a seeker or a job. I also maintain applicant references on the related user and job records for the existing UI, so those writes need to remain consistent.
+
+"One improvement I would make is to put the application creation and related updates into a MongoDB transaction, where the database deployment supports transactions. That would prevent a partial update if one of the writes fails. Another option would be to derive applicant lists from the application collection and reduce duplicated state."
+
+8. TESTING AND RELIABILITY
+
+"The backend uses Node's built-in test runner. The tests exercise important API behavior, including the health check, login and role validation, job search, and protections around demo accounts. I would continue expanding tests around authorization boundaries, invalid input, concurrent duplicate applications, and failures during multi-record updates.
+
+"For a production deployment I would also add structured logs, monitoring, and clear readiness checks so that the service does not report itself ready before MongoDB is available."
+
+9. SECURITY AND NEXT STEPS
+
+"Before treating the project as production-ready, I would review its deployment configuration carefully. Secrets must be stored in backend environment variables, not bundled into frontend code. I would remove any development fallback for the JWT secret, restrict CORS to the actual frontend origin, and review token storage. The current frontend stores the JWT in local storage; an HttpOnly, Secure cookie design with appropriate CSRF protections is worth evaluating for a production version.
+
+"I would also add pagination to growing lists, improve monitoring and error reporting, and make the application lifecycle and database consistency more robust."
+
+10. CLOSING
+
+"Overall, Job Executive demonstrates a full-stack workflow: role-based access, REST API design, data modeling, search, application management, third-party AI integration, and automated backend tests. The feature I would be most interested in discussing is the application lifecycle, because it connects the UI, authorization rules, data model, and consistency trade-offs."
+
+PRESENTATION TIPS
+
+- Start with the problem and user flows before listing technologies.
+- Explain one end-to-end flow, such as applying to a job, in detail.
+- Be clear about what is implemented and what you would improve.
+- If asked about a feature you did not build, say so and describe a sensible approach rather than claiming it exists.
+- Keep the walkthrough conversational; pause after the architecture and application-lifecycle sections for follow-up questions.

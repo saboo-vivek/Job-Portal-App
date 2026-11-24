@@ -1,0 +1,215 @@
+JOB EXECUTIVE - 65 PROJECT INTERVIEW QUESTIONS
+Short sample answers and follow-up prompts
+
+PROJECT AND ARCHITECTURE
+
+1. What problem does Job Executive solve?
+It provides a shared platform for job seekers to find and apply for roles, employers to manage vacancies and applicants, and administrators to oversee users and listings.
+
+2. Who are the main users?
+Job seekers, employers, and administrators. Public visitors can also browse public job, company, and blog information.
+
+3. What are the main features?
+Job search, profiles, job posting and management, applications and status tracking, admin management, company pages, blog interactions, and an AI resume booster.
+
+4. What is the technology stack?
+The frontend uses React, TypeScript, Vite, and Tailwind CSS. The backend uses Node.js, Express, and MongoDB through Mongoose. Axios connects the frontend to the REST API.
+
+5. Describe the high-level architecture.
+The browser app calls an Express API over HTTP. Routes direct requests to controllers, controllers use Mongoose models to access MongoDB, and middleware handles shared concerns such as authentication and role checks.
+
+6. Why keep frontend and backend separate?
+They have different responsibilities and build/deployment needs. The frontend can be deployed as static assets while the API runs as a Node service, and they communicate through a configurable API URL.
+
+7. How is the frontend organized?
+The React app is split into pages and components for public views and role-specific dashboards. API calls and response normalization are grouped in service modules, with a shared Axios instance.
+
+8. How is the backend organized?
+Routes define endpoints, controllers implement request behavior, models define MongoDB schemas, middleware handles authentication and access control, and utilities hold shared helpers.
+
+9. Why did you choose REST APIs?
+The application has clear resource-oriented operations for users, jobs, applications, blogs, and companies. REST endpoints are straightforward to consume from the React client and test independently.
+
+10. What happens when the frontend makes an API request?
+The API service uses Axios. The shared Axios instance sets the API base URL and attaches the JWT from local storage when one exists. A 401 response clears the token and redirects the user.
+
+DATA MODEL AND MONGODB
+
+11. What are the main data models?
+The core models are User, Job, Application, and Blog. A user has a role; jobs reference their employer; applications reference a job and seeker.
+
+12. Why is Application a separate collection?
+An application has its own status and timestamps, and it needs to be queried from either the seeker or employer side. A separate record models that relationship more directly than a single array of IDs.
+
+13. How are records related?
+Job.employerId references a User. Application.jobId references a Job and Application.seekerId references a User. Mongoose populate is used where the API needs related display information.
+
+14. How do you prevent duplicate applications?
+The API checks for an existing application, and a unique compound index on jobId plus seekerId prevents duplicates at the database level, including concurrent attempts.
+
+15. What indexes are defined?
+The application schema has a unique jobId/seekerId index and indexes for seeker history and job/status queries. Job and user schemas also define indexes for common lookup and sorting fields.
+
+16. How does job search work?
+The API builds a MongoDB filter from supported query parameters, including title keyword, location, job type, location type, experience level, and salary bounds. Results are sorted by creation time.
+
+17. How does the salary range filter work?
+For an overlapping range, a job's maximum salary must be at least the requested minimum, and its minimum salary must be no greater than the requested maximum.
+
+18. Why escape search input before using a regular expression?
+Escaping prevents user-entered regex characters from being interpreted as regex operators. This keeps the search behavior predictable and avoids unintended expensive patterns.
+
+19. Why use MongoDB and Mongoose?
+MongoDB provides document storage that fits the project's profiles and job data. Mongoose adds schemas, validation, references, and a consistent model API.
+
+20. What is a trade-off in the current data design?
+The application record is the main lifecycle entity, but applicant references are also kept on users and jobs for the existing UI. This duplicates some state and creates consistency work.
+
+APPLICATION FLOW AND AUTHORIZATION
+
+21. Walk through applying for a job.
+The API checks that the job exists, blocks the employer from applying to their own job, checks for a duplicate, creates an Application, and updates related references on the seeker and job.
+
+22. How does an employer see applicants?
+The employer must be authenticated and have the employer role. The API checks that the requested job belongs to that employer, then returns its applications with selected seeker profile fields.
+
+23. How are application statuses handled?
+The allowed statuses are APPLIED, SHORTLISTED, HIRED, and REJECTED. The backend validates the requested value and verifies that the employer owns the job before saving the change.
+
+24. What happens when an employer deletes a job?
+The API deletes the job, deletes its application records, and removes that job ID from users' appliedJobs arrays.
+
+25. What is the difference between authentication and authorization?
+Authentication establishes who the user is, here by verifying a JWT. Authorization determines what they may do, using role and ownership checks.
+
+26. How do you stop a user from editing another employer's job?
+The update query matches both the job ID and the authenticated employer's ID. If no matching job is found, the API returns a not-found or not-authorized response.
+
+27. Can a user choose ADMIN during registration?
+No. Registration accepts only SEEKER or EMPLOYER. Admin access should be granted through a controlled administrative process, not public self-registration.
+
+AUTHENTICATION AND SECURITY
+
+28. How are passwords stored?
+The backend hashes passwords with bcrypt using a work factor of 10. During login it compares the submitted password with the stored hash.
+
+29. How does JWT authentication work in this app?
+On registration or login, the backend signs a token with user identity and role claims. Protected requests send it as a Bearer token, and middleware verifies it before continuing.
+
+30. How do role checks work?
+Authentication middleware verifies the token and loads the user. Role middleware checks the user's role against the roles allowed for the route.
+
+31. How are demo accounts protected?
+Demo users are marked with an isDemo flag. Middleware and related admin safeguards block sensitive changes to shared demo accounts and protected demo data.
+
+32. What rate limits are configured?
+Authentication routes are limited to 100 requests per IP per 15 minutes. AI routes are limited to 20 requests per IP per 15 minutes.
+
+33. How would you protect the Gemini API key?
+Keep it in backend environment variables and call Gemini only from the backend. Never place the key in frontend code, a VITE variable, or a committed file.
+
+34. What security configuration would you improve before production?
+The JWT helper currently has a hard-coded fallback secret; I would remove that fallback and fail startup if the secret is missing. I would also restrict the current wildcard CORS origin to the deployed frontend.
+
+35. Where is the JWT stored, and what is the trade-off?
+The frontend currently stores it in local storage and sends it in the Authorization header. This is simple, but JavaScript-accessible storage increases the impact of XSS; I would evaluate Secure, HttpOnly cookies with CSRF protections for production.
+
+36. What should you check about the frontend build configuration?
+The Vite config currently maps Gemini environment values into client-side defines. I would remove those mappings before supplying any Gemini key, because bundled frontend values can be inspected by users.
+
+AI, ERRORS, TESTING, AND DEPLOYMENT
+
+37. How does the AI resume booster work?
+The frontend posts text to the backend. The backend builds a prompt, calls Gemini 2.5 Flash, and returns the generated summary to the client.
+
+38. What does the prompt ask Gemini to produce?
+It asks for a professional, ATS-friendly, single-paragraph summary of 80 to 120 words without headings or commentary.
+
+39. What happens if Gemini fails?
+The backend logs the failure and returns an error response rather than pretending the request succeeded. The client should show a useful failure message and allow retrying.
+
+40. Is AI-generated resume content saved?
+The backend endpoint returns the generated text; it does not persist the generated result as a separate server-side record.
+
+41. How are errors handled?
+Controllers return appropriate HTTP error statuses for expected cases and log caught failures. The Express app has a final error handler that hides stack details in production.
+
+42. What tests are included?
+The backend uses Node's built-in test runner. Tests cover the health check, demo login, invalid credentials, role mismatch, job search, and demo-account protections, among other API behavior.
+
+43. How would you test duplicate applications under concurrency?
+Send two simultaneous application requests for the same seeker and job. The unique database index should allow only one record; I would also ensure duplicate-key errors map to a clear client response.
+
+44. How would you improve consistency across the application writes?
+Use a MongoDB transaction for application creation and related updates where the deployment supports transactions. Alternatively, derive applicant lists from Application records to reduce duplicated references.
+
+45. How would you deploy this project?
+A typical setup is to deploy the Vite frontend as a static site, deploy the Express backend as a Node web service, and use MongoDB Atlas for the database. Set the frontend's API URL to the backend URL and configure secrets only in backend hosting settings.
+
+46. What environment variables are important?
+The backend needs MONGO_URI and a strong JWT_SECRET; the AI feature needs GEMINI_API_KEY. The frontend needs VITE_API_URL when the API is hosted on a different origin.
+
+47. What limitation might a free backend host have?
+Some free services sleep after inactivity, so the first request can be slow. That is acceptable for a portfolio demo but not a promise of production availability.
+
+48. What would you do if job listings became slow to load?
+Measure the query first, check indexes and query plans, then add pagination and avoid returning unnecessary populated fields. I would also consider whether the regex search needs a dedicated text-search strategy as data grows.
+
+49. What would you improve next?
+I would remove development security fallbacks, tighten CORS and frontend secret handling, use transactions or reduce duplicated application state, add pagination, and improve monitoring and readiness checks.
+
+50. What did you learn from building this project?
+I learned to connect user workflows to API boundaries and data models, and that role checks, data consistency, and secret management must be enforced on the server. I also learned to distinguish implemented behavior from production improvements.
+
+ADVANCED FOLLOW-UP QUESTIONS
+
+51. Why does the frontend normalize API responses?
+MongoDB documents use _id and populated references can have different shapes from plain IDs. The service layer maps those responses into frontend-friendly IDs and shapes so components have a more consistent data model.
+
+52. How is a signed-in user restored after a page refresh?
+The app checks for a JWT in local storage and requests the current user profile from the backend. If the request fails, the Axios 401 handler clears the token; the app can then show the signed-out experience.
+
+53. What is a limitation of the current frontend error handling?
+Some initial data-loading errors are only logged to the browser console. I would add visible error and retry states so users know when data could not be loaded.
+
+54. Why use both an application pre-check and a database unique index?
+The pre-check gives a clear response in the usual case. The unique index is the concurrency-safe guarantee when two requests arrive at nearly the same time.
+
+55. How does the API currently handle a duplicate-key error from that index?
+The application controller currently catches it as a general server error. I would detect MongoDB's duplicate-key error and return a clear conflict response, such as HTTP 409.
+
+56. What can go wrong when one user action updates several MongoDB documents?
+One write may succeed while a later write fails, leaving related records out of sync. A transaction can make the writes atomic where the MongoDB deployment supports transactions.
+
+57. Why keep applicant IDs on Job and User if Application records already exist?
+Those arrays support the existing data model and UI, but they duplicate information. I would either keep them with transactional updates or make Application the source of truth and derive applicant lists from it.
+
+58. How would you make job search safer and faster as the dataset grows?
+The API escapes regex input, but broad regex searches can still be expensive. I would cap and validate query lengths, add pagination, inspect query plans, and consider MongoDB text search or a dedicated search service.
+
+59. What would you do if MongoDB is unavailable during startup?
+The database connection code logs the failure and exits the process. I would also add an explicit readiness check so a hosting platform does not route traffic to an instance before its database connection is ready.
+
+60. How would you protect the AI feature from prompt injection or abusive input?
+I would treat user text as untrusted data, set input size limits, keep system instructions separate from user content where the API allows it, validate the output, and apply quotas. A prompt alone is not a security boundary.
+
+61. Is resume text sent outside the application?
+Yes. The backend sends it to Google's Gemini service to generate the result. Users should be told about that data flow, and the application should discourage sending sensitive personal information unnecessarily.
+
+62. Does the backend enforce Gemini's requested 80-120 word output length?
+The prompt requests that range, but the backend does not strictly validate the returned word count. I would validate the output and handle responses that do not meet the requirement.
+
+63. How would you test the API beyond the existing tests?
+I would add tests for ownership boundaries, invalid request data, concurrent duplicate applications, database write failures, and AI-provider failures. Tests should use isolated test data and avoid depending on a live production database.
+
+64. What would you add to a continuous-integration pipeline?
+On each pull request, install dependencies, run backend tests, build the frontend, and run a TypeScript check and lint if configured. This catches regressions before deployment.
+
+65. How would you explain the biggest production-readiness gap honestly?
+I would point to concrete items in the current implementation: the JWT secret fallback, wildcard CORS, frontend build-time secret mappings, local-storage token handling, and multi-document writes without transactions. I would prioritize removing exposed-secret paths and fixing server-side configuration first.
+
+HOW TO USE THIS LIST
+
+- Practice concise answers in your own words; do not memorize these as claims if they do not match your contribution.
+- Be ready to explain one flow on a whiteboard: login, search, apply, employer updates status.
+- If asked about a known limitation, state the current behavior, its risk, and your concrete next step.

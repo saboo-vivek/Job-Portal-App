@@ -200,10 +200,8 @@ job-executive-fullstack/
 │   ├── tailwind.config.js          # Tailwind CSS v3 design tokens
 │   └── vite.config.ts
 │
-├── docs/                           # Comprehensive Project Documentation Deliverables
-│   ├── Job_Executive_Project_Explanation_and_Interview_Guide.docx
-│   └── Job_Executive_Interview_Questions_and_Answers.docx
-├── scripts/                        # Documentation generation scripts
+├── PROJECT_EXPLANATION.txt         # 5-10 minute interview walkthrough
+├── INTERVIEW_QUESTIONS.txt         # 65 project interview questions and answers
 └── README.md                       # Repository master documentation
 ```
 
@@ -374,32 +372,10 @@ npm test
 
 ---
 
-## 📚 Technical Documentation Deliverables
+## 📚 Interview Preparation
 
-For in-depth interview preparation, architecture review, and code defense, two Microsoft Word (`.docx`) documents are provided in the `docs/` directory:
-
-1. **[Job_Executive_Project_Explanation_and_Interview_Guide.docx](docs/Job_Executive_Project_Explanation_and_Interview_Guide.docx)**
-   * Complete architectural design and multi-tier system breakdown.
-   * End-to-end control flows for all 8 application lifecycles with exact code traces.
-   * Database ER diagrams, compound index strategy, and the ESR rule.
-   * Defense-in-depth security model and RBAC matrix.
-   * Line-by-line code walkthroughs for login, registration, auth middleware, and search filtering.
-   * Interview presentation scripts (30s elevator pitch, 1m summary, 3m technical walkthrough, 5m architecture breakdown, whiteboard sequence, and live code guide).
-   * 6 genuine engineering challenges encountered and resolved.
-   * Comprehensive revision cheat sheet.
-
-2. **[Job_Executive_Interview_Questions_and_Answers.docx](docs/Job_Executive_Interview_Questions_and_Answers.docx)**
-   * **120 in-depth technical interview questions & detailed answers** across 9 domains:
-     * **Section A**: Project Overview & High-Level Architecture (12 Q&A)
-     * **Section B**: Frontend & React 19 Engineering (15 Q&A)
-     * **Section C**: Backend, Express 5 & Node.js Runtime (16 Q&A)
-     * **Section D**: Database Engineering & MongoDB / Mongoose (16 Q&A)
-     * **Section E**: Authentication, Authorization & Security Hardening (16 Q&A)
-     * **Section F**: Feature-Specific Engineering & AI Integration (13 Q&A)
-     * **Section G**: Realistic System Scenarios & Troubleshooting (12 Q&A)
-     * **Section H**: Practical Coding & Database Querying (10 Q&A)
-     * **Section I**: HR, Behavioral & Engineering Ownership (10 Q&A)
-   * Formatted with direct answers, in-depth technical explanations, real code references, likely follow-up questions, and key takeaways.
+* [PROJECT_EXPLANATION.txt](PROJECT_EXPLANATION.txt) - A spoken 5-10 minute project walkthrough.
+* [INTERVIEW_QUESTIONS.txt](INTERVIEW_QUESTIONS.txt) - 65 project-specific interviewer questions with concise sample answers.
 
 ---
 
