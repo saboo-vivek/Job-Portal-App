@@ -234,7 +234,8 @@ npm install
 
 # Configure environment variables
 cp .env.example .env
-# Edit .env to set your MONGO_URI and optional GEMINI_API_KEY
+# Local development uses MongoDB at 127.0.0.1:27017/jobexecutive
+# Add your optional GEMINI_API_KEY; set production MONGO_URI in Render only
 
 # Optionally seed demo accounts and jobs
 npm run seed
@@ -272,7 +273,7 @@ npm run dev
 | Variable | Required | Default / Example Value | Description |
 |:---|:---:|:---|:---|
 | `PORT` | Optional | `4000` | Port for the Express backend server |
-| `MONGO_URI` | **Required** | `mongodb://127.0.0.1:27017/job_executive` | MongoDB local connection string or Atlas URI |
+| `MONGO_URI` | Production only | Set in Render | MongoDB Atlas URI; development always uses local MongoDB |
 | `JWT_SECRET` | **Required** | Generate a long random value | Secret key for signing and verifying JWTs |
 | `NODE_ENV` | Optional | `development` | Environment mode (`development` or `production`) |
 | `ENABLE_DEMO_DATA` | Optional | `false` | When `true`, automatically seeds demo users and jobs |

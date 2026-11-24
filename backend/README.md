@@ -21,7 +21,6 @@ Create `backend/.env`:
 
 ```env
 PORT=4000
-MONGO_URI=mongodb://127.0.0.1:27017/jobexecutive
 JWT_SECRET=
 GEMINI_API_KEY=your_gemini_api_key
 ENABLE_DEMO_DATA=false
@@ -29,7 +28,7 @@ NODE_ENV=development
 CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 ```
 
-You can copy `.env.example` and replace its values. Keep `.env` out of Git. Set `MONGO_URI` to your own database and set `JWT_SECRET` to a long, random value. The AI endpoint requires `GEMINI_API_KEY`; other API features can be run without it. Production startup fails if the JWT secret is missing.
+You can copy `.env.example` and replace its values. Keep `.env` out of Git. In development the backend always connects to `mongodb://127.0.0.1:27017/jobexecutive`; `MONGO_URI` is only used when `NODE_ENV=production`. Set `JWT_SECRET` to a long, random value. The AI endpoint requires `GEMINI_API_KEY`; other API features can be run without it. Production startup fails if the JWT secret is missing.
 
 `CORS_ORIGINS` is a comma-separated list of allowed browser origins. Localhost origins are allowed automatically in development. In production, set this to your Vercel site origin, such as `https://your-site.vercel.app`.
 
