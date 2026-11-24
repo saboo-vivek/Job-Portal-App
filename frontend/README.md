@@ -52,8 +52,10 @@ The production files are written to `dist/`. The project currently defines `dev`
 
 ## API configuration and secrets
 
-When the frontend and backend are deployed on different domains, set `VITE_API_URL` in Vercel to the Render API URL, ending in `/api`, for example `https://your-api.onrender.com/api`. Vite embeds this value at build time, so redeploy after changing it. The variable is public configuration and must not contain secrets.
+The production API URL is configured in `.env.production` as `https://job-portal-app-qc6i.onrender.com/api`. Vite embeds this value at build time. You can override it with `VITE_API_URL` in Vercel's project environment settings if the Render service URL changes. This is public configuration and must not contain secrets.
 
 Keep `GEMINI_API_KEY`, `JWT_SECRET`, and `MONGO_URI` on the backend only. The Vite configuration does not expose backend environment variables to the browser.
+
+After deploying the frontend, add its Vercel origin to the Render service's `CORS_ORIGINS` environment variable and redeploy the backend.
 
 See the [backend README](../backend/README.md) for API setup and deployment.

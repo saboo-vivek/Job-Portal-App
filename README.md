@@ -398,7 +398,7 @@ npm test
 ### Frontend on Vercel
 1. Import the same repository as a separate Vercel project and set its root directory to `frontend`.
 2. Use `npm run build` as the build command and `dist` as the output directory.
-3. Set `VITE_API_URL=https://your-render-service.onrender.com/api`.
+3. The production API URL is currently configured as `https://job-portal-app-qc6i.onrender.com/api` in `frontend/.env.production`. Update it if the Render service URL changes.
 4. Deploy. If the Vercel domain changes, update `CORS_ORIGINS` in Render and redeploy the backend.
 
 Development keeps the frontend pointed at `http://localhost:4000/api`. The Vercel frontend variable is public browser configuration; never put backend secrets in frontend environment variables.
