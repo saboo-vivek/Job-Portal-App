@@ -3,7 +3,11 @@ import axios from "axios";
 
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:4000/api" : "/api");
+  (import.meta.env.DEV ? "http://localhost:4000/api" : undefined);
+
+if (!API_URL) {
+  throw new Error("Set VITE_API_URL to the deployed backend API URL.");
+}
 
 const axiosInstance = axios.create({
   baseURL: API_URL,

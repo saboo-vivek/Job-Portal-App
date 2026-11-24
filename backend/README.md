@@ -22,13 +22,16 @@ Create `backend/.env`:
 ```env
 PORT=4000
 MONGO_URI=mongodb://127.0.0.1:27017/jobexecutive
-JWT_SECRET=replace_with_a_long_random_secret
+JWT_SECRET=
 GEMINI_API_KEY=your_gemini_api_key
 ENABLE_DEMO_DATA=false
 NODE_ENV=development
+CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 ```
 
-Keep `.env` out of Git. Set `MONGO_URI` to your own database. The AI endpoint requires `GEMINI_API_KEY`; other API features can be run without it. Always configure a strong `JWT_SECRET`. The current code has a fallback secret, which should be removed before production use.
+You can copy `.env.example` and replace its values. Keep `.env` out of Git. Set `MONGO_URI` to your own database and set `JWT_SECRET` to a long, random value. The AI endpoint requires `GEMINI_API_KEY`; other API features can be run without it. Production startup fails if the JWT secret is missing.
+
+`CORS_ORIGINS` is a comma-separated list of allowed browser origins. Localhost origins are allowed automatically in development. In production, set this to your Vercel site origin, such as `https://your-site.vercel.app`.
 
 Start the development server:
 
@@ -75,8 +78,24 @@ Protected endpoints require a Bearer JWT. Role checks and ownership checks are p
 
 ## Deployment
 
-The backend directory includes a Vercel serverless handler and `vercel.json`. To deploy it from the monorepo, configure the Vercel project's root directory as `backend` and set `MONGO_URI`, `JWT_SECRET`, and (if using AI) `GEMINI_API_KEY` in the hosting provider's environment settings.
+### Render backend
 
-For a conventional Node web service, use `backend` as the service root, `npm install` as the install/build command, and `npm start` as the start command. Set `PORT` according to the host's requirements. The frontend must be configured with the deployed API URL; see the [frontend README](../frontend/README.md).
+1. Create a Render Web Service from this Git repository and set its root directory to `backend`.
+2. Use `npm install` as the build command and `npm start` as the start command.
+3. Add these environment variables in Render:
+   - `NODE_ENV=production`
+   - `MONGO_URI` from your MongoDB Atlas database
+   - `JWT_SECRET` set to a long, unique secret
+   - `CORS_ORIGINS=https://your-site.vercel.app`
+   - `GEMINI_API_KEY` if you want to enable resume enhancement
+4. Deploy and copy the service URL. The API base URL is the service URL followed by `/api`.
 
-Before production, remove the JWT fallback secret, restrict CORS to the intended frontend origin, and ensure Gemini credentials are never included in the frontend build.
+Create a MongoDB Atlas database and database user, then put its connection URI in Render as `MONGO_URI`. Do not commit the URI or share it publicly. Configure Atlas network access for the Render service as narrowly as your hosting plan allows.
+
+The backend directory also includes a Vercel serverless handler and `vercel.json`, but the recommended setup for this project is Render for the API.
+
+### Vercel frontend
+
+Import the same Git repository as a separate Vercel project and set its root directory to `frontend`. Use `npm run build` as the build command and `dist` as the output directory. Set `VITE_API_URL` to `https://your-api.onrender.com/api`, replacing the example with your Render URL, then deploy. If the Vercel domain changes, update `CORS_ORIGINS` in Render and redeploy the backend.
+
+See the [frontend README](../frontend/README.md) for local frontend commands. Never put backend secrets in Vercel frontend environment variables.

@@ -3,6 +3,19 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 
+if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET must be configured in production");
+}
+
+const developmentOrigins = process.env.NODE_ENV === "production"
+  ? []
+  : ["http://localhost:3000", "http://127.0.0.1:3000"];
+const configuredOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+const allowedOrigins = new Set([...developmentOrigins, ...configuredOrigins]);
+
 const connectDB = require("./config/db");
 const setupSwagger = require("./swagger");
 const seedDefaultUsers = require("./utils/seedUsers");
@@ -36,7 +49,16 @@ connectDB()
 
 /* -------------------- MIDDLEWARE -------------------- */
 app.use(helmet());
-app.use(cors({ origin: "*" }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.has(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
+  })
+);
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ limit: "1mb", extended: true }));

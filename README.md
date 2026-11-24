@@ -236,8 +236,8 @@ npm install
 cp .env.example .env
 # Edit .env to set your MONGO_URI and optional GEMINI_API_KEY
 
-# Seed demo accounts and 35+ realistic Indian jobs
-npm run seed:demo
+# Optionally seed demo accounts and jobs
+npm run seed
 
 # Run automated integration tests (12 tests)
 npm test
@@ -273,16 +273,17 @@ npm run dev
 |:---|:---:|:---|:---|
 | `PORT` | Optional | `4000` | Port for the Express backend server |
 | `MONGO_URI` | **Required** | `mongodb://127.0.0.1:27017/job_executive` | MongoDB local connection string or Atlas URI |
-| `JWT_SECRET` | **Required** | `supersecretjwtkey_job_executive_2026` | Secret key for signing and verifying HS256 JWTs |
+| `JWT_SECRET` | **Required** | Generate a long random value | Secret key for signing and verifying JWTs |
 | `NODE_ENV` | Optional | `development` | Environment mode (`development` or `production`) |
-| `ENABLE_DEMO_DATA` | Optional | `true` | When `true`, automatically seeds demo users and jobs |
-| `GEMINI_API_KEY` | Optional | `AIzaSy...` | Google Gemini API key for AI Resume Booster feature |
+| `ENABLE_DEMO_DATA` | Optional | `false` | When `true`, automatically seeds demo users and jobs |
+| `GEMINI_API_KEY` | Optional | Set privately | Google Gemini API key for AI Resume Booster feature |
+| `CORS_ORIGINS` | Optional | Local Vite origins | Comma-separated list of allowed frontend origins |
 
 ### Frontend Configuration (`frontend/.env`)
 
 | Variable | Required | Default / Example Value | Description |
 |:---|:---:|:---|:---|
-| `VITE_API_URL` | Optional | `http://localhost:4000/api` | Base URL of the backend Express REST API |
+| `VITE_API_URL` | Optional in development | `http://localhost:4000/api` | Set to the deployed Render API URL in Vercel |
 
 ---
 
@@ -381,24 +382,25 @@ npm test
 
 ## 🚀 Production Deployment Guide
 
-### Deploying Backend (e.g. Render, Railway, or AWS EC2)
-1. Set the root directory to `backend`.
-2. Build Command: `npm install`
-3. Start Command: `npm start`
-4. Set Environment Variables:
-   * `NODE_ENV=production`
-   * `PORT=4000`
-   * `MONGO_URI=<your-mongodb-atlas-connection-string>`
-   * `JWT_SECRET=<your-strong-cryptographic-secret>`
-   * `ENABLE_DEMO_DATA=true`
-   * `GEMINI_API_KEY=<your-google-gemini-api-key>`
+### MongoDB Atlas
+1. Create an Atlas database and database user.
+2. Add the Atlas connection URI as `MONGO_URI` in Render. Keep it private.
+3. Configure Atlas network access for Render as narrowly as your hosting plan allows.
 
-### Deploying Frontend (e.g. Vercel or Netlify)
-1. Set the root directory to `frontend`.
-2. Build Command: `npm run build`
-3. Output Directory: `dist`
-4. Set Environment Variables:
-   * `VITE_API_URL=https://your-backend-domain.com/api`
+### Backend on Render
+1. Create a Web Service from this repository and set its root directory to `backend`.
+2. Use `npm install` as the build command and `npm start` as the start command.
+3. Set `NODE_ENV=production`, `MONGO_URI`, a strong `JWT_SECRET`, and `CORS_ORIGINS=https://your-site.vercel.app`.
+4. Add `GEMINI_API_KEY` if using the resume feature. Set `ENABLE_DEMO_DATA=true` only if you want public demo records.
+5. Deploy and copy the Render service URL. Render provides the `PORT` environment variable.
+
+### Frontend on Vercel
+1. Import the same repository as a separate Vercel project and set its root directory to `frontend`.
+2. Use `npm run build` as the build command and `dist` as the output directory.
+3. Set `VITE_API_URL=https://your-render-service.onrender.com/api`.
+4. Deploy. If the Vercel domain changes, update `CORS_ORIGINS` in Render and redeploy the backend.
+
+Development keeps the frontend pointed at `http://localhost:4000/api`. The Vercel frontend variable is public browser configuration; never put backend secrets in frontend environment variables.
 
 ---
 
