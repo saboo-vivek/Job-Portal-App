@@ -1,14 +1,6 @@
 # 🧠 Job Executive — Enterprise Full-Stack Job Portal & Recruitment Ecosystem
 
-<p align="center">
-  <a href="https://daily-apply.vercel.app/" target="_blank">
-    <img src="https://img.shields.io/badge/🚀_Live_Demo-Visit_Site-brightgreen?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo">
-  </a>
-  <a href="#-public-demo-accounts--zero-friction-exploration">
-    <img src="https://img.shields.io/badge/👤_Demo_Accounts-Try_All_Roles-blue?style=for-the-badge" alt="Demo Accounts">
-  </a>
-</p>
-
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Site-2EA44F?style=for-the-badge&logo=vercel&logoColor=white)](https://daily-apply.vercel.app/)
 [![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-20+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -21,8 +13,9 @@
 
 > **Job Executive** is an enterprise-grade full-stack recruitment platform connecting ambitious job seekers, hiring enterprises, and platform moderators. Built with **React 19**, **TypeScript**, **Tailwind CSS**, **Node.js**, **Express 5**, and **MongoDB**, the platform features sub-50ms queries via compound indexes, zero-storage cloud resume linking, real-time hiring pipelines, and **Google Gemini 2.5 Flash AI** for instant resume bullet-point enhancement.
 
+### 🚀 [**Live Demo → daily-apply.vercel.app**](https://daily-apply.vercel.app/)
+
 ---
-# 🚀 Live Link <a href="https://daily-apply.vercel.app/" target="_blank">
 
 ## 🌟 Public Demo Accounts — Zero Friction Exploration
 
