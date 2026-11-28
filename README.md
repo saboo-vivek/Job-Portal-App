@@ -22,7 +22,7 @@
 > **Job Executive** is an enterprise-grade full-stack recruitment platform connecting ambitious job seekers, hiring enterprises, and platform moderators. Built with **React 19**, **TypeScript**, **Tailwind CSS**, **Node.js**, **Express 5**, and **MongoDB**, the platform features sub-50ms queries via compound indexes, zero-storage cloud resume linking, real-time hiring pipelines, and **Google Gemini 2.5 Flash AI** for instant resume bullet-point enhancement.
 
 ---
-**Live Link** https://daily-apply.vercel.app/
+# 🚀 Live Link <a href="https://daily-apply.vercel.app/" target="_blank">
 
 ## 🌟 Public Demo Accounts — Zero Friction Exploration
 
